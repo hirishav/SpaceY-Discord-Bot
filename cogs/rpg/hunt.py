@@ -18,6 +18,18 @@ class Hunt(commands.Cog):
             await ctx.send(f"Abhi hunt par nahi jaa sakte! **{remaining}** wait karo.")
             return
             
+        user_data = db.get_user_all(user_id)
+        if not user_data:
+            db.add_coins(user_id, 0)
+            user_data = db.get_user_all(user_id)
+            
+        current_hp = user_data['hp']
+        max_hp = user_data['max_hp']
+        
+        if current_hp <= 0:
+            await ctx.send(f"**{ctx.author.name}**, you are dead! Use `s heal` to restore your health before hunting.")
+            return
+
         xp_gained = random.randint(1500, 3500)
         coins_gained = random.randint(100, 600)
         
@@ -26,10 +38,13 @@ class Hunt(commands.Cog):
         
         db.set_cooldown(user_id, "hunt", 1 * 60) # 1 minute
         
-        # Cosmetic HP for now
+        # Real HP calculation
         hp_lost = random.randint(10, 150)
-        max_hp = 364
-        hp_remaining = max_hp - hp_lost
+        current_hp -= hp_lost
+        if current_hp < 0:
+            current_hp = 0
+            
+        db.set_hp(user_id, current_hp)
         
         mobs = [
             ("🦄", "UNICORN", ["common lootbox", "unicorn horn", "horseshoe", "smol coin"]),
@@ -42,7 +57,7 @@ class Hunt(commands.Cog):
         
         msg = f"**{ctx.author.name}** found and killed a {emoji} **{mob_name}**\n"
         msg += f"Earned {coins_gained:,} coins and {xp_gained:,} XP\n"
-        msg += f"Lost {hp_lost} HP, remaining HP is {hp_remaining}/{max_hp}\n"
+        msg += f"Lost {hp_lost} HP, remaining HP is {current_hp}/{max_hp}\n"
         
         drops = random.sample(possible_drops, k=random.randint(2, len(possible_drops)))
         for drop in drops:
