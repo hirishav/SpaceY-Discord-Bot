@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+logs/
+.venv/
+venv/
+.env.*
+!.env.example
+*.db
+spacey.db
