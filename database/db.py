@@ -127,6 +127,14 @@ def get_item_amount(user_id: int, item: str):
     conn.close()
     return row[0] if row else 0
 
+def get_inventory(user_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT item_name, amount FROM inventory WHERE user_id = ? AND amount > 0", (user_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return {row[0]: row[1] for row in rows}
+
 def format_time_remaining(end_time):
     remaining = int(end_time - time.time())
     if remaining <= 0:

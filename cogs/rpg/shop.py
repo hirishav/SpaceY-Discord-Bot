@@ -124,10 +124,12 @@ class Shop(commands.Cog):
         db.add_item(user_id, item_data["name"], amount)
         
         embed = discord.Embed(
-            title=f"{ctx.author.name} — purchase successful",
-            description=f"Tumne **{amount} {item_data['name']}** kharid liya!\n\n**-{total_price:,}** 🟡 coins",
-            color=0x2b2d31
+            title="🛍️ Purchase Successful!",
+            description=f"> Tumne safaltapurvak **{amount}x {item_data['emoji']} {item_data['name'].title()}** kharid liya hai!\n\n**Kharcha:** `{total_price:,}` 🟡 coins\n**Bache hue coins:** `{current_coins - total_price:,}` 🟡",
+            color=discord.Color.brand_green()
         )
+        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url if ctx.author.display_avatar else None)
+        embed.set_footer(text="SpaceY Shop • Shukriya aane ke liye!")
         await ctx.send(embed=embed)
 
 async def setup(bot):
